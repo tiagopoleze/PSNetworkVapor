@@ -13,7 +13,7 @@ private extension PSNetwork.Method {
     }
 }
 
-extension RoutesBuilder {
+public extension RoutesBuilder {
     @discardableResult
     func endpoint<T: PSRequest>(
         _ endpoint: T.Type,
