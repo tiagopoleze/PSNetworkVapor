@@ -13,19 +13,16 @@ private extension PSNetwork.Method {
     }
 }
 
-public extension PSRequest where ResponseModel: AsyncResponseEncodable {
+extension RoutesBuilder {
     @discardableResult
-    func register(
-        with app: Vapor.Application,
-        use closure: @escaping (Vapor.Request, BodyParameter?) async throws -> ResponseModel
-    ) -> Vapor.Route {
-        return app.on(method.nio, path.pathComponent) { request async throws -> ResponseModel in
-            switch method {
-            case .get, .delete:
-                return try await closure(request, nil)
-            case .patch(let content), .post(let content), .put(let content):
-                return try await closure(request, content)
-            }
+    func endpoint<T: PSRequest>(
+        _ endpoint: T.Type,
+        use closure: @escaping (Request, T.BodyParameter) async throws -> T.ResponseModel
+    ) -> Route where T.ResponseModel: AsyncResponseEncodable
+    {
+        return self.on(endpoint.method.nio, endpoint.path.pathComponent) { request async throws -> T.ResponseModel in
+            let content = try request.content.decode(endpoint.BodyParameter)
+            return try await closure(request, content)
         }
     }
 }
@@ -34,4 +31,8 @@ private extension Array where Element == String {
     var pathComponent: [PathComponent] {
         map { PathComponent(stringLiteral: $0) }
     }
+}
+
+public protocol Endpoint {
+    static func register(with routes: RoutesBuilder)
 }
