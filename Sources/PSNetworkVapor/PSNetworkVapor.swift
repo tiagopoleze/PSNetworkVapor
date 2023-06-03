@@ -17,8 +17,8 @@ public extension RoutesBuilder {
     @discardableResult
     func endpoint<T: PSRequest>(
         _ endpoint: T.Type,
-        use closure: @escaping (Request, T.BodyParameter) async throws -> T.ResponseModel
-    ) -> Route where T.ResponseModel: AsyncResponseEncodable
+        use closure: @escaping (Vapor.Request, T.BodyParameter) async throws -> T.ResponseModel
+    ) -> Vapor.Route where T.ResponseModel: Vapor.AsyncResponseEncodable
     {
         return self.on(endpoint.method.nio, endpoint.path.pathComponent) { request async throws -> T.ResponseModel in
             let content = try request.content.decode(endpoint.BodyParameter)
