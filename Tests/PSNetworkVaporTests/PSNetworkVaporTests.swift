@@ -31,7 +31,7 @@ struct GetRequest: PSRequest {
     var host: String = ""
 }
 
-extension GetRequest: Endpoint {
+extension GetRequest: PSEndpoint {
     static func register(with routes: RoutesBuilder) {
         routes.endpoint(self) { request, body in
             .init(name: "Tiago")
